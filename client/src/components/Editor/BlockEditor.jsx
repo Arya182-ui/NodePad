@@ -21,7 +21,7 @@ const emptyBlock = (type = 'text') => ({
 });
 
 // ─── main component ──────────────────────────────────────────────────────────
-export default function BlockEditor({ blocks = [], onChange }) {
+export default function BlockEditor({ blocks = [], onChange, readOnly = false }) {
   const navigate                      = useNavigate();
   const [focusId, setFocusId]         = useState(null);
   const [slashState, setSlashState]   = useState(null);
@@ -33,8 +33,8 @@ export default function BlockEditor({ blocks = [], onChange }) {
 
   // ensure at least one block
   useEffect(() => {
-    if (blocks.length === 0) onChange([emptyBlock()]);
-  }, []);
+    if (!readOnly && blocks.length === 0) onChange([emptyBlock()]);
+  }, [readOnly]);
 
   // ── block ops ──────────────────────────────────────────────────────────────
   const update = useCallback((id, patch) => {
@@ -95,29 +95,30 @@ export default function BlockEditor({ blocks = [], onChange }) {
     <div
       className="be-root"
       ref={editorRef}
-      onMouseUp={handleMouseUp}
+      onMouseUp={readOnly ? undefined : handleMouseUp}
     >
       {blocks.map((block, idx) => (
         <BlockRow
           key={block.id}
           block={block}
           index={idx}
-          isFocused={focusId === block.id}
-          isDragging={dragIdx === idx}
-          isOver={overIdx === idx}
-          onFocus={() => setFocusId(block.id)}
-          onBlur={() => setFocusId(null)}
-          onUpdate={(patch) => update(block.id, patch)}
-          onDelete={() => remove(block.id)}
-          onInsertAfter={(type) => insertAfter(block.id, type)}
-          onSlashOpen={(query, rect) => setSlashState({ blockId: block.id, query, rect })}
-          onSlashClose={() => setSlashState(null)}
-          onMentionOpen={(query, rect) => setMentionState({ blockId: block.id, query, rect })}
-          onMentionClose={() => setMentionState(null)}
-          onDragStart={() => onDragStart(idx)}
-          onDragOver={(e) => onDragOver(e, idx)}
-          onDrop={(e) => onDrop(e, idx)}
-          onDragEnd={onDragEnd}
+          isFocused={!readOnly && focusId === block.id}
+          isDragging={!readOnly && dragIdx === idx}
+          isOver={!readOnly && overIdx === idx}
+          readOnly={readOnly}
+          onFocus={() => !readOnly && setFocusId(block.id)}
+          onBlur={() => !readOnly && setFocusId(null)}
+          onUpdate={(patch) => !readOnly && update(block.id, patch)}
+          onDelete={() => !readOnly && remove(block.id)}
+          onInsertAfter={(type) => !readOnly && insertAfter(block.id, type)}
+          onSlashOpen={(query, rect) => !readOnly && setSlashState({ blockId: block.id, query, rect })}
+          onSlashClose={() => !readOnly && setSlashState(null)}
+          onMentionOpen={(query, rect) => !readOnly && setMentionState({ blockId: block.id, query, rect })}
+          onMentionClose={() => !readOnly && setMentionState(null)}
+          onDragStart={() => !readOnly && onDragStart(idx)}
+          onDragOver={(e) => !readOnly && onDragOver(e, idx)}
+          onDrop={(e) => !readOnly && onDrop(e, idx)}
+          onDragEnd={!readOnly ? onDragEnd : undefined}
         />
       ))}
 
@@ -167,7 +168,7 @@ export default function BlockEditor({ blocks = [], onChange }) {
 
 // ─── single block row ─────────────────────────────────────────────────────────
 function BlockRow({
-  block, index, isFocused, isDragging, isOver,
+  block, index, isFocused, isDragging, isOver, readOnly = false,
   onFocus, onBlur, onUpdate, onDelete, onInsertAfter,
   onSlashOpen, onSlashClose,
   onMentionOpen, onMentionClose,
@@ -291,15 +292,15 @@ function BlockRow({
           <span className="be-callout__icon">💡</span>
           <div
             ref={ref}
-            contentEditable
+            contentEditable={!readOnly}
             suppressContentEditableWarning
             className="be-callout__text"
             data-placeholder={placeholder}
-            onInput={handleInput}
-            onKeyDown={handleKeyDown}
-            onPaste={handlePaste}
-            onFocus={onFocus}
-            onBlur={onBlur}
+            onInput={readOnly ? undefined : handleInput}
+            onKeyDown={readOnly ? undefined : handleKeyDown}
+            onPaste={readOnly ? undefined : handlePaste}
+            onFocus={readOnly ? undefined : onFocus}
+            onBlur={readOnly ? undefined : onBlur}
           />
         </div>
       </div>
@@ -356,23 +357,24 @@ function BlockRow({
         onDragOver={onDragOver}
         onDrop={onDrop}
       >
-        <RowActions hover={hover} onAdd={() => onInsertAfter()} onDelete={onDelete} onDragStart={onDragStart} onDragEnd={onDragEnd} />
+        <RowActions hover={!readOnly && hover} onAdd={() => onInsertAfter()} onDelete={onDelete} onDragStart={onDragStart} onDragEnd={onDragEnd} />
         <div className="be-toggle">
           <button
             className={`be-toggle__arrow ${block.open ? 'open' : ''}`}
-            onClick={() => onUpdate({ open: !block.open })}
+            onClick={() => !readOnly && onUpdate({ open: !block.open })}
+            disabled={readOnly}
           >▶</button>
           <div
             ref={ref}
-            contentEditable
+            contentEditable={!readOnly}
             suppressContentEditableWarning
             className="be-toggle__summary"
             data-placeholder="Toggle"
-            onInput={handleInput}
-            onKeyDown={handleKeyDown}
-            onPaste={handlePaste}
-            onFocus={onFocus}
-            onBlur={onBlur}
+            onInput={readOnly ? undefined : handleInput}
+            onKeyDown={readOnly ? undefined : handleKeyDown}
+            onPaste={readOnly ? undefined : handlePaste}
+            onFocus={readOnly ? undefined : onFocus}
+            onBlur={readOnly ? undefined : onBlur}
           />
         </div>
       </div>
@@ -403,7 +405,8 @@ function BlockRow({
             type="checkbox"
             className="be-todo__check"
             checked={!!block.checked}
-            onChange={() => onUpdate({ checked: !block.checked })}
+            onChange={() => !readOnly && onUpdate({ checked: !block.checked })}
+            disabled={readOnly}
           />
         )}
         {block.type === 'bulletList' && <span className="be-bullet">•</span>}
@@ -411,15 +414,15 @@ function BlockRow({
 
         <Tag
           ref={ref}
-          contentEditable
+          contentEditable={!readOnly}
           suppressContentEditableWarning
           className={`be-content${block.checked ? ' be-content--checked' : ''}`}
           data-placeholder={placeholder}
-          onInput={handleInput}
-          onKeyDown={handleKeyDown}
-          onPaste={handlePaste}
-          onFocus={onFocus}
-          onBlur={onBlur}
+          onInput={readOnly ? undefined : handleInput}
+          onKeyDown={readOnly ? undefined : handleKeyDown}
+          onPaste={readOnly ? undefined : handlePaste}
+          onFocus={readOnly ? undefined : onFocus}
+          onBlur={readOnly ? undefined : onBlur}
         />
       </div>
     </div>
@@ -428,6 +431,8 @@ function BlockRow({
 
 // ─── row action buttons ───────────────────────────────────────────────────────
 function RowActions({ hover, onAdd, onDelete, onDragStart, onDragEnd }) {
+  if (!hover) return null; // Don't render if not hovering
+  
   return (
     <div className={`be-actions ${hover ? 'be-actions--visible' : ''}`}>
       <button

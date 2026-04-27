@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useOutletContext } from 'react-router-dom';
 import { notesAPI } from '../services/api';
 import toast from 'react-hot-toast';
 import { ArrowLeft, Check, Loader2, ChevronRight, LayoutTemplate } from 'lucide-react';
@@ -17,6 +17,7 @@ export default function NoteEditor() {
   const { id }   = useParams();
   const navigate = useNavigate();
   const isNew    = id === 'new';
+  const { refreshNotes } = useOutletContext() || {};
 
   const [note, setNote]           = useState({
     title: '', blocks: [{ id: '1', type: 'text', content: '' }],
@@ -82,23 +83,37 @@ export default function NoteEditor() {
   const doSave = async () => {
     const n = noteRef.current;
     if (!n.title && n.blocks.every(b => !b.content)) return;
+    
     try {
       setStatus('saving');
       const payload = {
         ...n,
         content: n.blocks.map(b => b.content).filter(Boolean).join('\n\n'),
       };
-      if (isNew && !savedIdRef.current) {
+      
+      // Create new note if it doesn't have an ID yet
+      if (!savedIdRef.current) {
         const res = await notesAPI.create(payload);
         savedIdRef.current = res.data.id;
         clearDraft('new');
-        navigate(`/note/${res.data.id}`, { replace: true });
+        // Only navigate on first save, then update URL without reload
+        if (isNew) {
+          window.history.replaceState(null, '', `/note/${res.data.id}`);
+        }
+        // Refresh sidebar to show new note
+        if (refreshNotes) refreshNotes();
       } else {
-        await notesAPI.update(savedIdRef.current || id, payload);
-        clearDraft(savedIdRef.current || id);
+        // Update existing note
+        await notesAPI.update(savedIdRef.current, payload);
+        clearDraft(savedIdRef.current);
+        // Refresh sidebar to update note details
+        if (refreshNotes) refreshNotes();
       }
       setStatus('saved');
-    } catch {
+      // Hide "saved" status after 2 seconds
+      setTimeout(() => setStatus('idle'), 2000);
+    } catch (err) {
+      console.error('Save error:', err);
       setStatus('error');
       // Save to draft cache so work isn't lost
       saveDraft(savedIdRef.current || id || 'new', noteRef.current);
@@ -107,14 +122,32 @@ export default function NoteEditor() {
 
   useEffect(() => () => clearTimeout(saveTimer.current), []);
 
+  // Keyboard shortcut for manual save (Ctrl+S / Cmd+S)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        handleManualSave();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const updateNote = (patch) => {
     setNote(prev => {
       const next = { ...prev, ...patch };
       // persist draft locally on every change
       saveDraft(savedIdRef.current || id || 'new', next);
+      scheduleSave(); // Trigger autosave
       return next;
     });
-    scheduleSave();
+  };
+
+  // Manual save function
+  const handleManualSave = async () => {
+    clearTimeout(saveTimer.current);
+    await doSave();
   };
 
   const applyTemplate = (template) => {
@@ -174,6 +207,15 @@ export default function NoteEditor() {
 
         <div className="ne-topbar-right">
           <StatusBadge status={status} />
+          <button
+            className="ne-icon-btn ne-save-btn"
+            onClick={handleManualSave}
+            disabled={status === 'saving'}
+            title="Save now (Ctrl+S)"
+            aria-label="Save note"
+          >
+            <Check size={16} strokeWidth={2} />
+          </button>
           {isNew && (
             <button
               className="ne-icon-btn ne-templates-btn"

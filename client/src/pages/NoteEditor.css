@@ -237,13 +237,43 @@
 
 /* ── Mobile ── */
 @media (max-width: 768px) {
-  .ne-body { padding: var(--sp-6) var(--sp-5) var(--sp-16); }
+  .ne-body { 
+    padding: var(--sp-6) var(--sp-5) var(--sp-16); 
+    max-width: 100%;
+  }
   .ne-title { font-size: var(--font-2xl); }
   .ne-breadcrumb { display: none; }
+  .ne-topbar {
+    padding: 0 var(--sp-3);
+    gap: var(--sp-1);
+  }
+  .ne-topbar-right {
+    gap: var(--sp-1);
+  }
+  .ne-status {
+    font-size: 10px;
+    padding: 2px var(--sp-1);
+  }
+  .ne-icon-btn {
+    width: 32px;
+    height: 32px;
+  }
 }
 @media (max-width: 480px) {
-  .ne-body { padding: var(--sp-5) var(--sp-4) var(--sp-16); }
+  .ne-body { 
+    padding: var(--sp-5) var(--sp-4) var(--sp-16); 
+  }
   .ne-title { font-size: var(--font-xl); }
+  .ne-header {
+    gap: var(--sp-2);
+  }
+  .ne-tags {
+    gap: var(--sp-1);
+  }
+  .ne-tag {
+    font-size: 10px;
+    padding: 2px var(--sp-1);
+  }
 }
 
 /* ── Templates button ── */
@@ -255,3 +285,18 @@
   padding: 0 var(--sp-2);
 }
 .ne-templates-btn:hover { color: var(--brand); }
+
+/* ── Save button ── */
+.ne-save-btn {
+  color: var(--brand);
+  background: var(--brand-subtle);
+  border: 1px solid var(--brand-border);
+}
+.ne-save-btn:hover {
+  background: var(--brand);
+  color: white;
+}
+.ne-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

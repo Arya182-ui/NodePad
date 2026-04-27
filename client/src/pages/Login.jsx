@@ -34,7 +34,17 @@ export default function Login() {
       await loginWithGoogle();
       navigate('/');
     } catch (err) {
-      toast.error('Google sign-in failed');
+      console.error('Google auth error:', err);
+      // Handle specific error cases
+      if (err.code === 'auth/popup-closed-by-user') {
+        toast.error('Sign-in cancelled');
+      } else if (err.code === 'auth/popup-blocked') {
+        toast.error('Popup blocked. Please allow popups for this site.');
+      } else if (err.code === 'auth/unauthorized-domain') {
+        toast.error('This domain is not authorized. Please add it in Firebase Console.');
+      } else {
+        toast.error('Google sign-in failed. Please try again.');
+      }
     } finally {
       setGLoad(false);
     }

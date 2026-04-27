@@ -9,6 +9,13 @@ const api = axios.create({
   timeout: 10000,
 });
 
+// Public API instance (no auth required)
+const publicApi = axios.create({
+  baseURL: API_URL,
+  headers: { 'Content-Type': 'application/json' },
+  timeout: 10000,
+});
+
 // Attach Firebase ID token to every request
 api.interceptors.request.use(async (config) => {
   const user = auth.currentUser;
@@ -30,6 +37,15 @@ api.interceptors.response.use(
       await new Promise(r => setTimeout(r, 800)); // brief back-off
       return api(config);
     }
+    const message = err.response?.data?.message || err.message || 'Something went wrong';
+    return Promise.reject(new Error(message));
+  }
+);
+
+// Public API response handler
+publicApi.interceptors.response.use(
+  (res) => res.data,
+  (err) => {
     const message = err.response?.data?.message || err.message || 'Something went wrong';
     return Promise.reject(new Error(message));
   }
@@ -60,6 +76,10 @@ export const notesAPI = {
   // version history
   getVersions:     (id)              => api.get(`/notes/${id}/versions`),
   restoreVersion:  (id, versionId)   => api.post(`/notes/${id}/versions/${versionId}/restore`),
+  // sharing
+  createShareLink: (id)              => api.post(`/notes/${id}/share`),
+  revokeShareLink: (id)              => api.delete(`/notes/${id}/share`),
+  getSharedNote:   (shareId)         => publicApi.get(`/notes/shared/${shareId}`),
   // bulk operations
   bulkDelete:   (ids) => Promise.all(ids.map(id => api.delete(`/notes/${id}`))),
   bulkRestore:  (ids) => Promise.all(ids.map(id => api.post(`/notes/${id}/restore`))),

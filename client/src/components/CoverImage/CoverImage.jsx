@@ -16,15 +16,17 @@ const GRADIENTS = [
   'linear-gradient(135deg, #2c003e 0%, #1a0533 100%)',
 ];
 
-export default function CoverImage({ cover, onChange }) {
+export default function CoverImage({ cover, onChange, readOnly = false }) {
   const [showPicker, setShowPicker] = useState(false);
 
   const randomGradient = () => {
+    if (readOnly) return;
     const g = GRADIENTS[Math.floor(Math.random() * GRADIENTS.length)];
     onChange(g);
   };
 
   if (!cover) {
+    if (readOnly) return null; // Don't show "Add cover" button in read-only mode
     return (
       <div className="cover-empty">
         <button className="cover-add-btn" onClick={randomGradient}>
@@ -45,14 +47,16 @@ export default function CoverImage({ cover, onChange }) {
             : { backgroundImage: `url(${cover})`, backgroundSize: 'cover', backgroundPosition: 'center' }
         }
       />
-      <div className="cover-actions">
-        <button className="cover-action-btn" onClick={randomGradient}>
-          <Shuffle size={13} strokeWidth={2} /> Change
-        </button>
-        <button className="cover-action-btn cover-action-btn--remove" onClick={() => onChange('')}>
-          <X size={13} strokeWidth={2} /> Remove
-        </button>
-      </div>
+      {!readOnly && (
+        <div className="cover-actions">
+          <button className="cover-action-btn" onClick={randomGradient}>
+            <Shuffle size={13} strokeWidth={2} /> Change
+          </button>
+          <button className="cover-action-btn cover-action-btn--remove" onClick={() => onChange('')}>
+            <X size={13} strokeWidth={2} /> Remove
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -3,13 +3,18 @@ const { body } = require('express-validator');
 const {
   getAllNotes, getNoteById, createNote, updateNote, deleteNote,
   restoreNote, permanentDelete, getTrash, duplicateNote, searchNotes,
-  getVersions, restoreVersion,
+  getVersions, restoreVersion, createShareLink, getSharedNote, revokeShareLink,
 } = require('../controllers/notes.controller');
 const validateRequest = require('../middleware/validateRequest');
 const authenticate    = require('../middleware/auth.middleware');
 const sanitizeNote    = require('../middleware/sanitize');
 
 const router = express.Router();
+
+// Public route for shared notes (no auth required)
+router.get('/shared/:shareId', getSharedNote);
+
+// All other routes require authentication
 router.use(authenticate);
 
 const noteValidation = [
@@ -31,5 +36,7 @@ router.delete('/:id/permanent',                 permanentDelete);
 router.post('/:id/duplicate',                   duplicateNote);
 router.get('/:id/versions',                     getVersions);
 router.post('/:id/versions/:versionId/restore', restoreVersion);
+router.post('/:id/share',                       createShareLink);
+router.delete('/:id/share',                     revokeShareLink);
 
 module.exports = router;

@@ -26,9 +26,10 @@ const getAllNotes = async (req, res, next) => {
     const limit  = Math.min(parseInt(req.query.limit) || 50, 100);
     const cursor = req.query.cursor; // last doc updatedAt ISO string
 
+    console.log('Fetching notes for user:', req.user.uid);
+
     let query = userNotes(req.user.uid)
-      .where('deleted', '!=', true)
-      .orderBy('deleted')
+      .where('deleted', '==', false)
       .orderBy('updatedAt', 'desc')
       .limit(limit + 1); // fetch one extra to detect next page
 
@@ -44,8 +45,12 @@ const getAllNotes = async (req, res, next) => {
 
     const nextCursor = hasMore ? results[results.length - 1].updatedAt : null;
 
+    console.log('Found', results.length, 'notes');
     res.json({ success: true, count: results.length, data: results, nextCursor });
-  } catch (err) { next(err); }
+  } catch (err) { 
+    console.error('Get all notes error:', err);
+    next(err); 
+  }
 };
 
 // ── getNoteById ───────────────────────────────────────────────────────────────
@@ -72,13 +77,23 @@ const createNote = async (req, res, next) => {
       icon:      icon     || '',
       cover:     cover    || '',
       parentId:  parentId || null,
+      deleted:   false,
+      deletedAt: null,
       createdAt: now,
       updatedAt: now,
     };
 
+    console.log('Creating note for user:', req.user.uid);
+    console.log('Note data:', JSON.stringify(noteData, null, 2));
+
     const ref = await userNotes(req.user.uid).add(noteData);
+    console.log('Note created with ID:', ref.id);
+    
     res.status(201).json({ success: true, data: { id: ref.id, ...noteData } });
-  } catch (err) { next(err); }
+  } catch (err) { 
+    console.error('Create note error:', err);
+    next(err); 
+  }
 };
 
 // ── updateNote (saves a version snapshot before updating) ────────────────────
@@ -104,6 +119,9 @@ const updateNote = async (req, res, next) => {
       updatedAt: new Date().toISOString(),
     };
 
+    console.log('Updating note:', req.params.id, 'for user:', req.user.uid);
+    console.log('Update data:', JSON.stringify(patch, null, 2));
+
     // Save version snapshot (fire-and-forget, don't block the response)
     const versionsCol = col.doc(req.params.id).collection('versions');
     versionsCol.add({
@@ -117,12 +135,19 @@ const updateNote = async (req, res, next) => {
       const batch = db.batch();
       snap.docs.forEach(d => batch.delete(d.ref));
       if (!snap.empty) await batch.commit();
-    }).catch(() => {}); // non-critical
+    }).catch((err) => {
+      console.error('Version save error:', err);
+    });
 
     await col.doc(req.params.id).update(patch);
     const updated = await col.doc(req.params.id).get();
+    console.log('Note updated successfully');
+    
     res.json({ success: true, data: { id: updated.id, ...updated.data() } });
-  } catch (err) { next(err); }
+  } catch (err) { 
+    console.error('Update note error:', err);
+    next(err); 
+  }
 };
 
 // ── deleteNote (soft delete) ──────────────────────────────────────────────────
@@ -313,8 +338,119 @@ const restoreVersion = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// ── createShareLink ───────────────────────────────────────────────────────────
+const createShareLink = async (req, res, next) => {
+  try {
+    const col = userNotes(req.user.uid);
+    const doc = await col.doc(req.params.id).get();
+    if (!doc.exists) return res.status(404).json({ success: false, message: 'Note not found' });
+
+    // Generate a unique share ID
+    const shareId = Math.random().toString(36).substring(2, 15) + 
+                    Math.random().toString(36).substring(2, 15);
+    
+    const shareData = {
+      noteId: req.params.id,
+      ownerId: req.user.uid,
+      shareId,
+      createdAt: new Date().toISOString(),
+      expiresAt: null, // No expiration by default
+    };
+
+    // Store share link in a separate collection
+    await db.collection('sharedNotes').doc(shareId).set(shareData);
+
+    // Update note with share info
+    await col.doc(req.params.id).update({
+      shared: true,
+      shareId,
+      updatedAt: new Date().toISOString(),
+    });
+
+    res.json({ 
+      success: true, 
+      data: { 
+        shareId,
+        shareUrl: `${req.protocol}://${req.get('host')}/shared/${shareId}`
+      } 
+    });
+  } catch (err) { next(err); }
+};
+
+// ── getSharedNote (public access, no auth required) ───────────────────────────
+const getSharedNote = async (req, res, next) => {
+  try {
+    const shareDoc = await db.collection('sharedNotes').doc(req.params.shareId).get();
+    if (!shareDoc.exists) {
+      return res.status(404).json({ success: false, message: 'Shared note not found' });
+    }
+
+    const shareData = shareDoc.data();
+    
+    // Check if expired
+    if (shareData.expiresAt && new Date(shareData.expiresAt) < new Date()) {
+      return res.status(410).json({ success: false, message: 'Share link has expired' });
+    }
+
+    // Get the actual note
+    const noteDoc = await db
+      .collection('users')
+      .doc(shareData.ownerId)
+      .collection('notes')
+      .doc(shareData.noteId)
+      .get();
+
+    if (!noteDoc.exists || noteDoc.data().deleted) {
+      return res.status(404).json({ success: false, message: 'Note not found' });
+    }
+
+    const noteData = noteDoc.data();
+    
+    // Return read-only version (remove sensitive fields)
+    res.json({ 
+      success: true, 
+      data: {
+        id: noteDoc.id,
+        title: noteData.title,
+        content: noteData.content,
+        blocks: noteData.blocks,
+        icon: noteData.icon,
+        cover: noteData.cover,
+        tags: noteData.tags,
+        createdAt: noteData.createdAt,
+        updatedAt: noteData.updatedAt,
+        readOnly: true,
+      }
+    });
+  } catch (err) { next(err); }
+};
+
+// ── revokeShareLink ───────────────────────────────────────────────────────────
+const revokeShareLink = async (req, res, next) => {
+  try {
+    const col = userNotes(req.user.uid);
+    const doc = await col.doc(req.params.id).get();
+    if (!doc.exists) return res.status(404).json({ success: false, message: 'Note not found' });
+
+    const noteData = doc.data();
+    if (noteData.shareId) {
+      // Delete from shared collection
+      await db.collection('sharedNotes').doc(noteData.shareId).delete();
+    }
+
+    // Update note
+    await col.doc(req.params.id).update({
+      shared: false,
+      shareId: null,
+      updatedAt: new Date().toISOString(),
+    });
+
+    res.json({ success: true, message: 'Share link revoked' });
+  } catch (err) { next(err); }
+};
+
 module.exports = {
   getAllNotes, getNoteById, createNote, updateNote, deleteNote,
   restoreNote, permanentDelete, getTrash, duplicateNote, searchNotes,
-  getVersions, restoreVersion,
+  getVersions, restoreVersion, createShareLink, getSharedNote, revokeShareLink,
 };

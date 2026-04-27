@@ -15,6 +15,7 @@ const Login      = lazy(() => import('./pages/Login'));
 const Signup     = lazy(() => import('./pages/Signup'));
 const Landing    = lazy(() => import('./pages/Landing'));
 const Trash      = lazy(() => import('./pages/Trash'));
+const SharedNote = lazy(() => import('./pages/SharedNote'));
 
 function PageLoader() {
   return (
@@ -54,6 +55,7 @@ export default function App() {
               <Route path="/login"   element={<Login />} />
               <Route path="/signup"  element={<Signup />} />
               <Route path="/landing" element={<Landing />} />
+              <Route path="/shared/:shareId" element={<SharedNote />} />
 
               <Route path="/" element={
                 <ProtectedRoute fallback={<Landing />}>

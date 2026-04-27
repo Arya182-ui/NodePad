@@ -6,7 +6,7 @@
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  z-index: 500;
+  z-index: 9999;
   background: #0d1117;
   border: 1px solid #1e293b;
   border-radius: 10px;
@@ -67,6 +67,12 @@
   color: #ef4444;
 }
 
+.na-item--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .na-divider {
   height: 1px;
   background: #1e293b;
@@ -75,4 +81,237 @@
 
 [data-theme="light"] .na-divider {
   background: #e2e8f0;
+}
+
+/* ── Share Modal ── */
+.na-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.15s ease;
+  padding: var(--sp-4);
+  overflow-y: auto;
+}
+
+.na-modal {
+  background: var(--bg-elevated);
+  border: 1px solid var(--bd-base);
+  border-radius: var(--r-lg);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.2s ease;
+  position: relative;
+  z-index: 10001;
+  margin: auto;
+}
+
+[data-theme="light"] .na-modal {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.na-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--sp-5);
+  border-bottom: 1px solid var(--bd-base);
+}
+
+.na-modal-title {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--tx-primary);
+  margin: 0;
+}
+
+.na-modal-subtitle {
+  font-size: var(--font-sm);
+  color: var(--tx-muted);
+  margin: var(--sp-1) 0 0;
+}
+
+.na-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--tx-muted);
+  cursor: pointer;
+  padding: var(--sp-1);
+  border-radius: var(--r-sm);
+  transition: all var(--t-fast);
+}
+
+.na-modal-close:hover {
+  background: var(--bg-overlay);
+  color: var(--tx-primary);
+}
+
+.na-modal-body {
+  padding: var(--sp-5);
+}
+
+.na-share-create-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--brand);
+  color: white;
+  border: none;
+  border-radius: var(--r-md);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.na-share-create-btn:hover {
+  background: var(--brand-hover);
+  transform: translateY(-1px);
+}
+
+.na-share-create-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.na-share-link-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.na-share-link-input {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--bg-base);
+  border: 1px solid var(--bd-base);
+  border-radius: var(--r-md);
+}
+
+.na-share-link-icon {
+  color: var(--tx-muted);
+  flex-shrink: 0;
+}
+
+.na-share-link-field {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--tx-secondary);
+  font-size: var(--font-sm);
+  font-family: monospace;
+}
+
+.na-share-actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.na-share-copy-btn {
+  flex: 1;
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--brand);
+  color: white;
+  border: none;
+  border-radius: var(--r-md);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.na-share-copy-btn:hover {
+  background: var(--brand-hover);
+}
+
+.na-share-revoke-btn {
+  padding: var(--sp-2) var(--sp-4);
+  background: transparent;
+  color: var(--error);
+  border: 1px solid var(--error);
+  border-radius: var(--r-md);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.na-share-revoke-btn:hover {
+  background: rgba(244, 63, 94, 0.1);
+}
+
+.na-share-revoke-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .na-modal {
+    width: 95%;
+    max-width: none;
+  }
+  
+  .na-modal-header {
+    padding: var(--sp-4);
+  }
+  
+  .na-modal-body {
+    padding: var(--sp-4);
+  }
+  
+  .na-modal-title {
+    font-size: var(--font-base);
+  }
+  
+  .na-modal-subtitle {
+    font-size: 12px;
+  }
+  
+  .na-share-link-field {
+    font-size: 12px;
+  }
+  
+  .na-share-actions {
+    flex-direction: column;
+  }
+  
+  .na-share-copy-btn,
+  .na-share-revoke-btn {
+    width: 100%;
+  }
 }

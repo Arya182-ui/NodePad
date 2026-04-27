@@ -1,0 +1,115 @@
+/* ═══════════════════════════════════════════
+   SHARED NOTE PAGE
+═══════════════════════════════════════════ */
+
+.shared-note-page {
+  background: var(--bg-base);
+}
+
+.shared-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px var(--sp-3);
+  border-radius: var(--r-full);
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.shared-signup-btn {
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--brand);
+  color: white;
+  border: none;
+  border-radius: var(--r-md);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  display: inline-flex;
+  align-items: center;
+}
+
+.shared-signup-btn:hover {
+  background: var(--brand-hover);
+  transform: translateY(-1px);
+}
+
+/* Error state */
+.shared-error {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-base);
+  padding: var(--sp-5);
+}
+
+.shared-error-content {
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.shared-error-icon {
+  color: var(--tx-muted);
+  margin-bottom: var(--sp-4);
+}
+
+.shared-error-title {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+  color: var(--tx-primary);
+  margin: 0 0 var(--sp-2);
+}
+
+.shared-error-message {
+  font-size: var(--font-base);
+  color: var(--tx-muted);
+  margin: 0 0 var(--sp-6);
+}
+
+.shared-error-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sp-3) var(--sp-5);
+  background: var(--brand);
+  color: white;
+  border: none;
+  border-radius: var(--r-md);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.shared-error-btn:hover {
+  background: var(--brand-hover);
+  transform: translateY(-1px);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .shared-badge {
+    font-size: 10px;
+    padding: 3px var(--sp-2);
+  }
+  
+  .shared-signup-btn {
+    font-size: 12px;
+    padding: var(--sp-1) var(--sp-3);
+  }
+  
+  .shared-error-title {
+    font-size: var(--font-xl);
+  }
+  
+  .shared-error-message {
+    font-size: var(--font-sm);
+  }
+}
