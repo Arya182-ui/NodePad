@@ -1,0 +1,122 @@
+.sc-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: scOverlayIn 0.15s ease;
+}
+
+@keyframes scOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.sc-modal {
+  width: 100%;
+  max-width: 440px;
+  background: #0d1117;
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
+  animation: scIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes scIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.sc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.sc-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.sc-close {
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sc-close:hover {
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+.sc-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.sc-group-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #334155;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0 8px 6px;
+}
+
+.sc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 8px;
+  border-radius: 6px;
+  transition: background 0.1s;
+}
+
+.sc-row:hover {
+  background: #151b2e;
+}
+
+.sc-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.sc-keys {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.sc-key {
+  background: #151b2e;
+  border: 1px solid #1e293b;
+  border-radius: 5px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 7px;
+  font-family: inherit;
+  min-width: 24px;
+  text-align: center;
+}

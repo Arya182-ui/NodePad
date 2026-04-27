@@ -1,0 +1,18 @@
+.layout-new {
+  min-height: 100vh;
+  display: flex;
+  position: relative;
+}
+
+.main-content-new {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 1024px) {
+  .main-content-new {
+    margin-left: 280px;
+  }
+}

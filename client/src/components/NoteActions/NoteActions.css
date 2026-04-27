@@ -1,0 +1,78 @@
+.na-wrap {
+  position: relative;
+}
+
+.na-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 500;
+  background: #0d1117;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+  animation: naIn 0.15s ease;
+}
+
+[data-theme="light"] .na-menu {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes naIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.na-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s, color 0.1s;
+}
+
+[data-theme="light"] .na-item {
+  color: #475569;
+}
+
+.na-item:hover {
+  background: #151b2e;
+  color: #f8fafc;
+}
+
+[data-theme="light"] .na-item:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.na-item--danger {
+  color: #ef4444;
+}
+
+.na-item--danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.na-divider {
+  height: 1px;
+  background: #1e293b;
+  margin: 4px 0;
+}
+
+[data-theme="light"] .na-divider {
+  background: #e2e8f0;
+}

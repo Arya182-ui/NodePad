@@ -1,0 +1,89 @@
+.cover-empty {
+  height: 0;
+  position: relative;
+}
+
+.cover-add-btn {
+  position: absolute;
+  top: 16px;
+  right: 80px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+  opacity: 0;
+}
+
+.ne-body:hover .cover-add-btn {
+  opacity: 1;
+}
+
+.cover-add-btn:hover {
+  color: #64748b;
+  background: #151b2e;
+}
+
+.cover-wrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  margin-bottom: 0;
+}
+
+.cover-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+.cover-actions {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.cover-wrap:hover .cover-actions {
+  opacity: 1;
+}
+
+.cover-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cover-action-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.cover-action-btn--remove:hover {
+  background: rgba(239, 68, 68, 0.4);
+}
+
+@media (max-width: 768px) {
+  .cover-wrap {
+    height: 140px;
+  }
+}

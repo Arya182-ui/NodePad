@@ -1,0 +1,55 @@
+.not-found {
+  text-align: center;
+  padding: 6rem 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.not-found-title {
+  font-size: 8rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.3));
+}
+
+.not-found-subtitle {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1.25rem;
+}
+
+.not-found-text {
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .not-found-title {
+    font-size: 5rem;
+  }
+  
+  .not-found-subtitle {
+    font-size: 1.75rem;
+  }
+}

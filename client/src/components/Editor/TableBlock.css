@@ -1,0 +1,103 @@
+.tb-wrap {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 10px);
+  overflow: hidden;
+}
+
+.tb-scroll { overflow-x: auto; }
+
+.tb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.tb-th {
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  padding: 0;
+  min-width: 120px;
+}
+.tb-th:last-child { border-right: none; min-width: 36px; }
+.tb-th--add { width: 36px; min-width: 36px; }
+
+.tb-td {
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  padding: 0;
+  min-width: 120px;
+}
+.tb-td:last-child { border-right: none; min-width: 36px; }
+.tb-td--del { width: 36px; min-width: 36px; }
+.tb-tr:last-child .tb-td { border-bottom: none; }
+
+.tb-cell-wrap {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.tb-cell-wrap:hover .tb-del-col { opacity: 1; }
+
+.tb-input {
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--tx-primary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.tb-input::placeholder { color: var(--tx-placeholder); }
+.tb-input--header {
+  font-weight: 600;
+  color: var(--tx-secondary);
+}
+
+.tb-del-col, .tb-del-row {
+  background: transparent;
+  border: none;
+  color: var(--tx-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.tb-del-col:hover, .tb-del-row:hover { color: #ef4444; }
+.tb-tr:hover .tb-del-row { opacity: 1; }
+
+.tb-add-btn {
+  background: transparent;
+  border: none;
+  color: var(--tx-muted);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  transition: color 0.15s;
+}
+.tb-add-btn:hover { color: var(--brand); }
+
+.tb-add-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--border);
+  color: var(--tx-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tb-add-row:hover { background: var(--bg-overlay); color: var(--brand); }
