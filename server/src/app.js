@@ -64,10 +64,25 @@ app.get('/favicon.ico', (_req, res) => {
 app.use('/api/notes',  notesRoutes);
 app.use('/api/upload', uploadRoutes);
 
-// 404 handler
-app.use((_req, res) => {
-  res.status(404).json({ success: false, message: 'Route not found' });
-});
+// Serve static files from client build (for production)
+const clientBuildPath = path.join(__dirname, '../../client/dist');
+if (require('fs').existsSync(clientBuildPath)) {
+  app.use(express.static(clientBuildPath));
+  
+  // SPA fallback - serve index.html for all non-API routes
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(clientBuildPath, 'index.html'));
+    } else {
+      res.status(404).json({ success: false, message: 'Route not found' });
+    }
+  });
+} else {
+  // 404 handler for development
+  app.use((_req, res) => {
+    res.status(404).json({ success: false, message: 'Route not found' });
+  });
+}
 
 // Error handler (must be last)
 app.use(errorHandler);
