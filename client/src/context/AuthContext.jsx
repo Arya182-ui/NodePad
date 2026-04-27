@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   onAuthStateChanged,
   signInWithPopup,
@@ -12,6 +13,7 @@ import { auth, googleProvider } from '../config/firebase';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  const navigate = useNavigate();
   const [user, setUser]       = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -34,7 +36,10 @@ export function AuthProvider({ children }) {
     return cred;
   };
 
-  const logout = () => signOut(auth);
+  const logout = async () => {
+    await signOut(auth);
+    navigate('/landing');
+  };
 
   // Get fresh ID token for API calls
   const getToken = () => user?.getIdToken();

@@ -5,9 +5,9 @@
   backdrop-filter: blur(6px);
   z-index: 9000;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding-top: 80px;
+  padding: 24px;
   animation: smOverlayIn 0.15s ease;
 }
 
@@ -231,7 +231,7 @@
 }
 
 @media (max-width: 640px) {
-  .sm-overlay { padding-top: 40px; align-items: flex-start; }
+  .sm-overlay { padding: 16px; align-items: center; }
   .sm-modal   { border-radius: 12px; }
   .sm-footer  { display: none; }
 }
