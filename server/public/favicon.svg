@@ -1,0 +1,20 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="nodepad-favicon-bg" x1="10" y1="8" x2="54" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4F6EF7"/>
+      <stop offset="1" stop-color="#7C5CFC"/>
+    </linearGradient>
+    <linearGradient id="nodepad-favicon-node" x1="34" y1="37" x2="45" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67E8F9"/>
+      <stop offset="1" stop-color="#22C7F3"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#nodepad-favicon-bg)"/>
+  <path d="M24 15.5H37L45 23.5V44C45 46.7614 42.7614 49 40 49H24C21.2386 49 19 46.7614 19 44V20.5C19 17.7386 21.2386 15.5 24 15.5Z" fill="white"/>
+  <path d="M37 15.5V22C37 24.2091 38.7909 26 41 26H45" fill="#E5E7FF"/>
+  <rect x="25" y="28" width="14" height="3" rx="1.5" fill="#4F6EF7"/>
+  <rect x="25" y="34" width="10" height="3" rx="1.5" fill="#9AA9FF"/>
+  <path d="M31 42H35.5" stroke="#4F6EF7" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="28" cy="42" r="2.5" fill="#4F6EF7"/>
+  <circle cx="40" cy="42" r="5" fill="url(#nodepad-favicon-node)"/>
+</svg>

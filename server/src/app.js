@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const cors    = require('cors');
 const helmet  = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -18,6 +19,7 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app  = express();
 const PORT = process.env.PORT || 5000;
+const publicDir = path.join(__dirname, '../public');
 
 // Security middleware
 app.use(helmet());
@@ -37,6 +39,7 @@ app.use('/api/', limiter);
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.static(publicDir, { index: false }));
 
 // Request logger
 app.use((req, _res, next) => {
@@ -51,6 +54,10 @@ app.get('/health', (_req, res) => {
     message: 'NodePad API is running',
     timestamp: new Date().toISOString(),
   });
+});
+
+app.get('/favicon.ico', (_req, res) => {
+  res.sendFile(path.join(publicDir, 'favicon.svg'));
 });
 
 // API routes
